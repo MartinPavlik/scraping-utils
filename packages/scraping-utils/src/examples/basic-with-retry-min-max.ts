@@ -20,7 +20,7 @@ queue.enqueue({
   attempt: 0,
 })
 
-const logWithTime = (...messages) => console.log(new Date().toTimeString(), ...messages)
+const logWithTime = (...messages: any[]) => console.log(new Date().toTimeString(), ...messages)
 
 // Define our 'crawler'
 const crawler: Subscriber<Payload> = {
@@ -42,7 +42,6 @@ const crawler: Subscriber<Payload> = {
     logWithTime("We are done, all urls crawled!")
   }
 }
-
 
 const enhancedCrawler: Subscriber<Payload> = pipe(
   crawler,

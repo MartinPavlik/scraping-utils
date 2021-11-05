@@ -19,7 +19,7 @@ queue.enqueue({
 // Define our 'crawler'
 const crawler: Subscriber<Payload> = {
   // For each payload, call this function
-  next: (payload) => fetch(payload.url).then(response => {
+  next: (payload) => fetch(payload.url).then((response) => {
     console.log("Uhuu, response from ", payload.url, ' is ', response.status)
   }),
   // When there is an error, we want to be notified about it along with the original payload that caused the error.

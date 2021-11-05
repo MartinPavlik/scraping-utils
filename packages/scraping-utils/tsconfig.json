@@ -2,6 +2,7 @@
   "emitError": false,
   "compileOnSave": false,
   "compilerOptions": {
+    "declaration": true,
     "outDir": "dist/",
     "target": "ES2015",
     "module": "commonjs",
@@ -26,7 +27,7 @@
       "es2019",
       "es2020",
     ],
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

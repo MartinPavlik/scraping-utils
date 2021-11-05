@@ -21,7 +21,7 @@ export const isTimeoutError = (error: Error & { isTimeoutError?: boolean }) =>
   observer: Subscriber<ParentT>
 ) => ({
   next: (message: ParentT) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       /*
       This could be easier to write with Promise.race like this:
         Promise.race([
