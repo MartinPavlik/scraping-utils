@@ -1,0 +1,20 @@
+{
+  "name": "@satankebab/scraping-utils",
+  "version": "0.0.1",
+  "scripts": {
+    "clean-up-build": "rm -rf dist",
+    "build": "yarn clean-up-build; tsc",
+    "build:dev": "tsc --watch",
+    "test": "yarn build; mocha ./dist/**/*.spec.js --require source-map-support/register --timeout 1000000 --exit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.11.6",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3",
+    "source-map": "^0.7.3",
+    "source-map-support": "^0.5.19",
+    "typescript": "^4.4.3"
+  }
+}
