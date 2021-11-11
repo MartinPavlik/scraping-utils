@@ -3,46 +3,48 @@
  * @QueueMessageType the message type that is saved in the queue (before all transformations)
  */
 export type Subscriber<
-  FinalMessageType,
-  QueueMessageType = FinalMessageType
+  Payload extends PersistedPayload,
+  PersistedPayload = Payload
 > = {
-  next: (message: FinalMessageType) => Promise<void>;
-  error: (error: Error, message: QueueMessageType) => void;
+  next: (message: Payload) => Promise<void>;
+  error: (error: Error, message: PersistedPayload) => void;
   complete: () => void;
 };
 
-export type BasicQueue<QueueMessageType> = {
-  enqueue: (message: QueueMessageType) => void;
-  subscribe: (subscriber: Subscriber<QueueMessageType>) => void;
-  getQueue: () => QueueMessageType[];
+export type PartialSubscriber<
+  Payload extends PersistedPayload,
+  PersistedPayload = Payload
+> = Partial<Subscriber<Payload, PersistedPayload>>;
+
+export type BasicQueue<PersistedPayload> = {
+  enqueue: (message: PersistedPayload) => void;
+  subscribe: (subscriber: Subscriber<PersistedPayload>) => void;
+  getQueue: () => PersistedPayload[];
 };
 
 export type QueueConfig = {
-  parallelLimit?: number
-}
+  parallelLimit?: number;
+};
 
 const defaultConfig = {
-  parallelLimit: 1
-}
+  parallelLimit: 1,
+};
 
-/**
- * Allows only 1 messsage to be processed at once.
- */
-export function createQueue<QueueMessageType>(config: QueueConfig = {}): BasicQueue<QueueMessageType> {
-  const {
-    parallelLimit
-  } = {
+export function createQueue<PersistedPayload>(
+  config: QueueConfig = {}
+): BasicQueue<PersistedPayload> {
+  const { parallelLimit } = {
     ...defaultConfig,
     ...config,
-  }
-  
+  };
+
   if (parallelLimit < 1) {
-    throw new Error('Parallel limit must be higher than 0')
+    throw new Error("Parallel limit must be higher than 0");
   }
 
-  const subscribers: Subscriber<QueueMessageType>[] = [];
+  const subscribers: Subscriber<PersistedPayload>[] = [];
 
-  let internalQueue: QueueMessageType[] = [];
+  let internalQueue: PersistedPayload[] = [];
   let runningCount = 0;
 
   const dispatch = () => {
@@ -64,7 +66,7 @@ export function createQueue<QueueMessageType>(config: QueueConfig = {}): BasicQu
       runningCount--;
       tryToRun();
     });
-  }
+  };
 
   const tryToRun = () => {
     if (runningCount >= parallelLimit) return;
@@ -80,16 +82,16 @@ export function createQueue<QueueMessageType>(config: QueueConfig = {}): BasicQu
     }
 
     const freeSlots = parallelLimit - runningCount;
-    
+
     new Array(freeSlots).fill(0).forEach(dispatch);
   };
 
   return {
-    enqueue: (message: QueueMessageType) => {
+    enqueue: (message: PersistedPayload) => {
       internalQueue = [...internalQueue, message];
       tryToRun();
     },
-    subscribe: (subscriber: Subscriber<QueueMessageType>) => {
+    subscribe: (subscriber: Subscriber<PersistedPayload>) => {
       subscribers.push(subscriber);
       tryToRun();
     },

@@ -1,18 +1,28 @@
 {
   "name": "@satankebab/scraping-utils",
+  "license": "MIT",
   "description": "Zero dependency web scraping queue. TypeScript. Retry on errors, control the scraping spped and much more.",
-  "keywords": ["scraping", "queue", "typescript", "crawling"],
-  "version": "0.0.1",
+  "keywords": [
+    "scraping",
+    "queue",
+    "typescript",
+    "crawling"
+  ],
+  "version": "0.0.2",
+  "main": "index.js",
   "scripts": {
     "clean-up-build": "rm -rf dist",
     "build": "yarn clean-up-build; tsc",
     "build:dev": "tsc --watch",
-    "test": "yarn build; mocha ./dist/**/*.spec.js --require source-map-support/register --timeout 1000000 --exit"
+    "test": "yarn build; mocha ./dist/**/*.spec.js --require source-map-support/register --timeout 1000000 --exit",
+    "release": "npm run build; cp package.json ./dist/package.json; cp ../../README.md ./dist/README.md; cd dist; npm publish --scope=@satankebab --access public;"
   },
   "dependencies": {
-    "@types/chai": "^4.2.22"
+    "node-fetch": "^3.1.0",
+    "puppeteer": "^11.0.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.22",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.6",
     "chai": "^4.3.4",
@@ -20,5 +30,13 @@
     "source-map": "^0.7.3",
     "source-map-support": "^0.5.19",
     "typescript": "^4.4.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MartinPavlik/scraping-utils.git"
+  },
+  "author": {
+    "email": "martin.pavlik100@gmail.com",
+    "name": "Martin Pavlik"
   }
 }
