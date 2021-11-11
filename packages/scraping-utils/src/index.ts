@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { createQueue, Subscriber, BasicQueue } from "./queue/createQueue"
+import { createQueue, Subscriber, BasicQueue, PartialSubscriber } from "./queue/createQueue"
 import { withRetry } from "./observer/withRetry"
 import { withMaxProcessingTime, isTimeoutError } from "./observer/withMaxProcessingTime"
 import { withMinProcessingTime  } from "./observer/withMinProcessingTime"
@@ -20,6 +20,7 @@ export {
 
 export type {
   Subscriber,
+  PartialSubscriber,
   BasicQueue,
   Page,
 }
