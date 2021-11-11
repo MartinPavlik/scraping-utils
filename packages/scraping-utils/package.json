@@ -18,7 +18,6 @@
     "release": "npm run build; cp package.json ./dist/package.json; cp ../../README.md ./dist/README.md; cd dist; npm publish --scope=@satankebab --access public;"
   },
   "dependencies": {
-    "node-fetch": "^3.1.0",
     "puppeteer": "^11.0.0"
   },
   "devDependencies": {
