@@ -18,7 +18,7 @@ npm install @satankebab/scraping-utils;
 import { Page, createQueue, PartialSubscriber, runPuppeteerQueue } from "@satankebab/scraping-utils"
 
 const crawlSomething = async () => {
-  // Define a shape of a data we want to store in our queue
+  // Define a shape of the data we want to store in our queue
   type Payload = {
     url: string
     attempt: number
