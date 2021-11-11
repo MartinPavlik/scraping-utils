@@ -1,12 +1,13 @@
 {
   "name": "@satankebab/scraping-utils",
   "license": "MIT",
-  "description": "Zero dependency web scraping queue. TypeScript. Retry on errors, control the scraping spped and much more.",
+  "description": "Set of utils and queues to make web scraping easy.",
   "keywords": [
     "scraping",
     "queue",
     "typescript",
-    "crawling"
+    "crawling",
+    "puppeteer"
   ],
   "version": "0.0.3",
   "main": "index.js",
