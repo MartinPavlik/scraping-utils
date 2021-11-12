@@ -6,6 +6,7 @@ import { withMinProcessingTime  } from "./observer/withMinProcessingTime"
 import { pipe } from './utils/pipe';
 import { delay } from './utils/delay';
 import { runPuppeteerQueue } from './runner/runPuppeteerQueue';
+import { runBasicQueue } from './runner/runBasicQueue';
 
 export {
   createQueue,
@@ -16,6 +17,7 @@ export {
   delay,
   pipe,
   runPuppeteerQueue,
+  runBasicQueue,
 }
 
 export type {
