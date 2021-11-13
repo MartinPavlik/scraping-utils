@@ -53,7 +53,7 @@ export function createQueue<PersistedPayload>(
     }
 
     runningCount++;
-    let [message, ...nextInternalQueue] = internalQueue;
+    const [message, ...nextInternalQueue] = internalQueue;
     internalQueue = nextInternalQueue;
     Promise.allSettled([
       ...subscribers.map((subscriber) =>

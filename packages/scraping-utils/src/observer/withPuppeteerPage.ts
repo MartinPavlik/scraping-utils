@@ -1,8 +1,11 @@
 import { Subscriber } from "../queue/createQueue";
-import puppeteer, { Page, Browser, PuppeteerNodeLaunchOptions } from "puppeteer";
+import puppeteer, {
+  Page,
+  Browser,
+  PuppeteerNodeLaunchOptions,
+} from "puppeteer";
 
-
-export type { PuppeteerNodeLaunchOptions }
+export type { PuppeteerNodeLaunchOptions };
 
 export interface PayloadWithPage {
   page: Page;
@@ -10,9 +13,9 @@ export interface PayloadWithPage {
 
 /**
  * Returns a new observer that receives a new puppeteer page as a part of the message. The pages is closed when the .next method resolves.
- * 
+ *
  * Note - it is important to call .complete at the end of scraping to destroy the created browser.
- * 
+ *
  * @param launchOptions Generic launch options that are passed directly to puppeteer while launching a new browser.
  */
 export const withPuppeteerPage =
@@ -43,19 +46,18 @@ export const withPuppeteerPage =
         await initializingPromise;
       }
       if (!browser) {
-        initializingPromise = new Promise(resolve => {
-          puppeteer.launch(launchOptions).then(result => {
-            console.log('ppt launched!')
-            browser = result
-            resolve()
-          })
-        
+        initializingPromise = new Promise((resolve) => {
+          puppeteer.launch(launchOptions).then((result) => {
+            console.log("ppt launched!");
+            browser = result;
+            resolve();
+          });
         });
 
-        await initializingPromise
+        await initializingPromise;
       }
       if (!browser) {
-        throw new Error('Can not initialized puppeteer browser')
+        throw new Error("Can not initialized puppeteer browser");
       }
       return browser;
     };

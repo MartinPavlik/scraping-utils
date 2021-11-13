@@ -3,7 +3,11 @@ import { identity } from "../utils/identity";
 import { pipe, Subscriber, withRetry } from "../";
 import { withMaxProcessingTime } from "../observer/withMaxProcessingTime";
 import { withMinProcessingTime } from "../observer/withMinProcessingTime";
-import { PayloadWithPage, withPuppeteerPage, PuppeteerNodeLaunchOptions } from "../observer/withPuppeteerPage";
+import {
+  PayloadWithPage,
+  withPuppeteerPage,
+  PuppeteerNodeLaunchOptions,
+} from "../observer/withPuppeteerPage";
 import { BasicQueue, PartialSubscriber } from "../queue/createQueue";
 import { withStatistics } from "../observer/withStatistics";
 import { StatisticsConfig } from "./shared";
@@ -20,7 +24,7 @@ export const runPuppeteerQueue = async <
   puppeteerLaunchOptions = {},
   statistics,
 }: {
-  queue: BasicQueue<Omit<Payload, 'page'> & PersistedPayload>;
+  queue: BasicQueue<Omit<Payload, "page"> & PersistedPayload>;
   crawler: PartialSubscriber<Payload, PersistedPayload>;
   maxProcessingTime?: number;
   minProcessingTime?: number;
@@ -43,8 +47,14 @@ export const runPuppeteerQueue = async <
     minProcessingTime ? withMinProcessingTime(minProcessingTime) : identity,
     withPuppeteerPage(puppeteerLaunchOptions),
     withRetry(queue, retryAttempts),
-    statistics ? withStatistics(queue, statistics.onStatisticsReport, statistics.intervalMs) : identity,
-  )
+    statistics
+      ? withStatistics(
+          queue,
+          statistics.onStatisticsReport,
+          statistics.intervalMs
+        )
+      : identity
+  );
 
   queue.subscribe(finalCrawler);
 

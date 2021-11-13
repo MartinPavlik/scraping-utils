@@ -39,8 +39,14 @@ export const runBasicQueue = async <
     maxProcessingTime ? withMaxProcessingTime(maxProcessingTime) : identity,
     minProcessingTime ? withMinProcessingTime(minProcessingTime) : identity,
     withRetry(queue, retryAttempts),
-    statistics ? withStatistics(queue, statistics.onStatisticsReport, statistics.intervalMs) : identity,
-  )
+    statistics
+      ? withStatistics(
+          queue,
+          statistics.onStatisticsReport,
+          statistics.intervalMs
+        )
+      : identity
+  );
 
   queue.subscribe(finalCrawler);
 
