@@ -1,9 +1,11 @@
-import { PayloadWithAttempt } from "src/observer/withRetry";
+import { PayloadWithAttempt } from "../observer/withRetry";
+import { withStatistics } from "../observer/withStatistics";
 import { pipe, Subscriber, withRetry } from "../";
 import { withMaxProcessingTime } from "../observer/withMaxProcessingTime";
 import { withMinProcessingTime } from "../observer/withMinProcessingTime";
 import { BasicQueue, PartialSubscriber } from "../queue/createQueue";
 import { identity } from "../utils/identity";
+import { StatisticsConfig } from "./shared";
 
 export const runBasicQueue = async <
   Payload extends PersistedPayload,
@@ -14,12 +16,14 @@ export const runBasicQueue = async <
   maxProcessingTime,
   minProcessingTime,
   retryAttempts = 1,
+  statistics,
 }: {
   queue: BasicQueue<Payload & PersistedPayload>;
   crawler: PartialSubscriber<Payload, PersistedPayload>;
   maxProcessingTime?: number;
   minProcessingTime?: number;
   retryAttempts?: number;
+  statistics?: StatisticsConfig;
 }): Promise<void> => {
   const unitSubscriber: Subscriber<any, any> = {
     next: () => Promise.resolve(),
@@ -34,7 +38,8 @@ export const runBasicQueue = async <
     },
     maxProcessingTime ? withMaxProcessingTime(maxProcessingTime) : identity,
     minProcessingTime ? withMinProcessingTime(minProcessingTime) : identity,
-    withRetry(queue, retryAttempts)
+    withRetry(queue, retryAttempts),
+    statistics ? withStatistics(queue, statistics.onStatisticsReport, statistics.intervalMs) : identity,
   )
 
   queue.subscribe(finalCrawler);

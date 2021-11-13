@@ -1,10 +1,12 @@
-import { PayloadWithAttempt } from "src/observer/withRetry";
+import { PayloadWithAttempt } from "../observer/withRetry";
 import { identity } from "../utils/identity";
 import { pipe, Subscriber, withRetry } from "../";
 import { withMaxProcessingTime } from "../observer/withMaxProcessingTime";
 import { withMinProcessingTime } from "../observer/withMinProcessingTime";
 import { PayloadWithPage, withPuppeteerPage, PuppeteerNodeLaunchOptions } from "../observer/withPuppeteerPage";
 import { BasicQueue, PartialSubscriber } from "../queue/createQueue";
+import { withStatistics } from "../observer/withStatistics";
+import { StatisticsConfig } from "./shared";
 
 export const runPuppeteerQueue = async <
   Payload extends PersistedPayload & PayloadWithPage,
@@ -15,14 +17,16 @@ export const runPuppeteerQueue = async <
   maxProcessingTime,
   minProcessingTime,
   retryAttempts = 1,
-  puppeteerLaunchOptions = {}
+  puppeteerLaunchOptions = {},
+  statistics,
 }: {
   queue: BasicQueue<Omit<Payload, 'page'> & PersistedPayload>;
   crawler: PartialSubscriber<Payload, PersistedPayload>;
   maxProcessingTime?: number;
   minProcessingTime?: number;
   retryAttempts?: number;
-  puppeteerLaunchOptions?: PuppeteerNodeLaunchOptions
+  puppeteerLaunchOptions?: PuppeteerNodeLaunchOptions;
+  statistics?: StatisticsConfig;
 }): Promise<void> => {
   const unitSubscriber: Subscriber<any, any> = {
     next: () => Promise.resolve(),
@@ -38,7 +42,8 @@ export const runPuppeteerQueue = async <
     maxProcessingTime ? withMaxProcessingTime(maxProcessingTime) : identity,
     minProcessingTime ? withMinProcessingTime(minProcessingTime) : identity,
     withPuppeteerPage(puppeteerLaunchOptions),
-    withRetry(queue, retryAttempts)
+    withRetry(queue, retryAttempts),
+    statistics ? withStatistics(queue, statistics.onStatisticsReport, statistics.intervalMs) : identity,
   )
 
   queue.subscribe(finalCrawler);
