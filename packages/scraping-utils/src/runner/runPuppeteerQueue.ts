@@ -10,7 +10,11 @@ import {
 } from "../observer/withPuppeteerPage";
 import { BasicQueue, PartialSubscriber } from "../queue/createQueue";
 import { withStatistics } from "../observer/withStatistics";
-import { StatisticsConfig } from "./shared";
+import { PersistanceConfig, StatisticsConfig } from "./shared";
+import {
+  loadQueuePayloadsOr,
+  withPersistance,
+} from "../observer/withPersistance";
 
 export const runPuppeteerQueue = async <
   Payload extends PersistedPayload & PayloadWithPage,
@@ -23,6 +27,7 @@ export const runPuppeteerQueue = async <
   retryAttempts = 1,
   puppeteerLaunchOptions = {},
   statistics,
+  persistance,
 }: {
   queue: BasicQueue<Omit<Payload, "page"> & PersistedPayload>;
   crawler: PartialSubscriber<Payload, PersistedPayload>;
@@ -31,6 +36,7 @@ export const runPuppeteerQueue = async <
   retryAttempts?: number;
   puppeteerLaunchOptions?: PuppeteerNodeLaunchOptions;
   statistics?: StatisticsConfig;
+  persistance?: PersistanceConfig<Omit<Payload, "page"> & PersistedPayload>;
 }): Promise<void> => {
   const unitSubscriber: Subscriber<any, any> = {
     next: () => Promise.resolve(),
@@ -53,8 +59,19 @@ export const runPuppeteerQueue = async <
           statistics.onStatisticsReport,
           statistics.intervalMs
         )
+      : identity,
+    persistance
+      ? withPersistance(persistance.storage, queue, persistance.intervalMs)
       : identity
   );
+
+  if (persistance) {
+    const payloads = await loadQueuePayloadsOr(persistance.storage)(
+      persistance.initialPayloads || []
+    );
+
+    payloads.forEach(queue.enqueue);
+  }
 
   queue.subscribe(finalCrawler);
 

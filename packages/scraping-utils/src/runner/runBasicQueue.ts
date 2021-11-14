@@ -1,14 +1,17 @@
-import { PayloadWithAttempt } from "../observer/withRetry";
-import { withStatistics } from "../observer/withStatistics";
 import { pipe, Subscriber, withRetry } from "../";
 import { withMaxProcessingTime } from "../observer/withMaxProcessingTime";
 import { withMinProcessingTime } from "../observer/withMinProcessingTime";
+import {
+  loadQueuePayloadsOr,
+  withPersistance,
+} from "../observer/withPersistance";
+import { PayloadWithAttempt } from "../observer/withRetry";
+import { withStatistics } from "../observer/withStatistics";
 import { BasicQueue, PartialSubscriber } from "../queue/createQueue";
 import { identity } from "../utils/identity";
-import { StatisticsConfig } from "./shared";
+import { PersistanceConfig, StatisticsConfig } from "./shared";
 
 export const runBasicQueue = async <
-  Payload extends PersistedPayload,
   PersistedPayload extends PayloadWithAttempt
 >({
   queue,
@@ -17,13 +20,15 @@ export const runBasicQueue = async <
   minProcessingTime,
   retryAttempts = 1,
   statistics,
+  persistance,
 }: {
-  queue: BasicQueue<Payload & PersistedPayload>;
-  crawler: PartialSubscriber<Payload, PersistedPayload>;
+  queue: BasicQueue<PersistedPayload>;
+  crawler: PartialSubscriber<PersistedPayload>;
   maxProcessingTime?: number;
   minProcessingTime?: number;
   retryAttempts?: number;
   statistics?: StatisticsConfig;
+  persistance?: PersistanceConfig<PersistedPayload>;
 }): Promise<void> => {
   const unitSubscriber: Subscriber<any, any> = {
     next: () => Promise.resolve(),
@@ -45,8 +50,19 @@ export const runBasicQueue = async <
           statistics.onStatisticsReport,
           statistics.intervalMs
         )
+      : identity,
+    persistance
+      ? withPersistance(persistance.storage, queue, persistance.intervalMs)
       : identity
   );
+
+  if (persistance) {
+    const payloads = await loadQueuePayloadsOr(persistance.storage)(
+      persistance.initialPayloads || []
+    );
+
+    payloads.forEach(queue.enqueue);
+  }
 
   queue.subscribe(finalCrawler);
 

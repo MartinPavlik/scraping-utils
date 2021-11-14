@@ -23,8 +23,12 @@ import {
 } from "./observer/withStatistics";
 import { withPuppeteerPage } from "./observer/withPuppeteerPage";
 import { identity } from "./utils/identity";
+import { Storage } from "./storage/shared";
+import { createLocalStorage } from "./storage/localStorage";
+import { withPersistance } from "./observer/withPersistance";
 
 export {
+  createLocalStorage,
   createQueue,
   delay,
   identity,
@@ -34,6 +38,7 @@ export {
   runPuppeteerQueue,
   withMaxProcessingTime,
   withMinProcessingTime,
+  withPersistance,
   withPuppeteerPage,
   withRetry,
   withStatistics,
@@ -46,5 +51,6 @@ export type {
   StatisticsConfig,
   StatisticsReport,
   StatisticsReportHanlder,
+  Storage,
   Subscriber,
 };
