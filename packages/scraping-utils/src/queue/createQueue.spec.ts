@@ -14,6 +14,21 @@ describe("createQueue", () => {
       expect(q.getQueue()).to.deep.equal(["test-1", "test-2", "test-3"]);
     });
   });
+  describe("setQueue", () => {
+    it("replaces items in the queue with the provided ones", () => {
+      const q = createQueue<string>();
+
+      q.enqueue("test-1");
+      q.enqueue("test-2");
+      q.enqueue("test-3");
+
+      expect(q.getQueue()).to.deep.equal(["test-1", "test-2", "test-3"]);
+
+      q.setQueue(["a", "b", "c"]);
+
+      expect(q.getQueue()).to.deep.equal(["a", "b", "c"]);
+    });
+  });
   describe("subscribe", () => {
     it("consumes items from a queue", async () => {
       const q = createQueue<string>();

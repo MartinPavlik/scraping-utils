@@ -17,9 +17,10 @@ export type PartialSubscriber<
 > = Partial<Subscriber<Payload, PersistedPayload>>;
 
 export type BasicQueue<PersistedPayload> = {
-  enqueue: (message: PersistedPayload) => void;
+  enqueue: (payload: PersistedPayload) => void;
   subscribe: (subscriber: Subscriber<PersistedPayload>) => void;
   getQueue: () => PersistedPayload[];
+  setQueue: (payloads: PersistedPayload[]) => void;
 };
 
 export type QueueConfig = {
@@ -96,5 +97,8 @@ export function createQueue<PersistedPayload>(
       tryToRun();
     },
     getQueue: () => internalQueue,
+    setQueue: (payloads: PersistedPayload[]) => {
+      internalQueue = payloads;
+    },
   };
 }
