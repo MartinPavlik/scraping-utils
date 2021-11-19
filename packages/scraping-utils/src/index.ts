@@ -4,6 +4,7 @@ import {
   Subscriber,
   BasicQueue,
   PartialSubscriber,
+  QueueConfig,
 } from "./queue/createQueue";
 import { withRetry } from "./observer/withRetry";
 import {
@@ -48,6 +49,7 @@ export type {
   BasicQueue,
   Page,
   PartialSubscriber,
+  QueueConfig,
   StatisticsConfig,
   StatisticsReport,
   StatisticsReportHanlder,
