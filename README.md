@@ -167,3 +167,8 @@ const crawlSomething = async () => {
 
 crawlSomething()
 ```
+
+
+## Publishing
+
+Please, use only command `npm run release` to publish a new version of this package. It copies package.json and README.md to the `dist` directory and then executes `npm run publish` from there.
