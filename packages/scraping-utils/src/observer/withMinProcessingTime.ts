@@ -3,15 +3,31 @@ import { delay } from "../utils/delay";
 
 type Handler<Payload> = (payload: Payload) => Promise<void>;
 
-const ensureMinProcessingTime =
+export const ensureMinProcessingTime =
   (timeMs: number) =>
   <Payload extends PersistedPayload, PersistedPayload = Payload>(
     handler: Handler<Payload>
   ) =>
   (payload: Payload) =>
-    Promise.all([handler(payload), delay(timeMs)])
-      // Return undefined to satisfy next signature Promise<void>
-      .then(() => {});
+    Promise.all([
+      handler(payload)
+        // This little trick ensures that even if the handler errors,
+        // it will still wait for timeMs ms.
+        .then((result) => ({
+          result,
+          isOk: true as const,
+        }))
+        .catch((error) => ({
+          error,
+          isOk: false as const,
+        })),
+      delay(timeMs),
+    ]).then(([handlerResult]) => {
+      if (!handlerResult.isOk) {
+        throw handlerResult.error;
+      }
+      return handlerResult.result;
+    });
 
 /**
  * If processing of the message takes less than @param timeMs,
