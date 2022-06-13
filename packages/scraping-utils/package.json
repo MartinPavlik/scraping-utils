@@ -9,7 +9,7 @@
     "crawling",
     "puppeteer"
   ],
-  "version": "0.0.7",
+  "version": "0.0.8",
   "main": "index.js",
   "scripts": {
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
